@@ -312,6 +312,48 @@ namespace ExamenLenguajes
             return palabra;
         }
 
+        private string LeerComentario()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append((char)i_caracter);
+
+            i_caracter = Leer.Read();
+            if (i_caracter == '/')
+            {
+                sb.Append('/');
+                do
+                {
+                    i_caracter = Leer.Read();
+                    if (i_caracter != -1) sb.Append((char)i_caracter);
+                } while (i_caracter != 10 && i_caracter != -1);
+            }
+            else if (i_caracter == '*')
+            {
+                sb.Append('*');
+                bool cerrado = false;
+                while (i_caracter != -1)
+                {
+                    i_caracter = Leer.Read();
+                    if (i_caracter == -1) break;
+                    sb.Append((char)i_caracter);
+                    if (i_caracter == '*' && Leer.Peek() == '/')
+                    {
+                        i_caracter = Leer.Read();
+                        sb.Append('/');
+                        cerrado = true;
+                        break;
+                    }
+                }
+                if (!cerrado)
+                {
+                    N_error++;
+                }
+            }
+
+            i_caracter = Leer.Read();
+            return sb.ToString();
+        }
+
 
         private void analizarToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -403,11 +445,11 @@ namespace ExamenLenguajes
                         break;
 
                     case '/': // comentario
-                        if (Comentario())
-                        {
-                            Escribir.Write("// Comentario traducido\n");
-                        }
+                        string comentario = LeerComentario();
+                        Escribir.Write(comentario);
                         break;
+
+
 
                     default:
                         Escribir.Write((char)i_caracter);
